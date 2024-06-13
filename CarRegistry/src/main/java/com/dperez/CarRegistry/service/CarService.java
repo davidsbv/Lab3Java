@@ -1,15 +1,17 @@
 package com.dperez.CarRegistry.service;
 
-import com.dperez.CarRegistry.service.model.Car;
-
-import java.util.List;
+import com.dperez.CarRegistry.controller.dto.CarDTO;
 
 public interface CarService {
 
-    // Marca por defecto
-   String getDefaultBrand();
+  CarDTO addNewCar(CarDTO carDTO);
 
-   List<Car> getAllCars();
+  CarDTO getCarById(Integer id);
 
-   List<Car> getCarsByBrand(String brand);
+  CarDTO updatedCar(Integer id, CarDTO carDTO);
+
+  boolean deleteCar(Integer id);
+
+
+
 }

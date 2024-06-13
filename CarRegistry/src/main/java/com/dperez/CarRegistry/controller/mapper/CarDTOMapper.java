@@ -5,7 +5,7 @@ import com.dperez.CarRegistry.service.model.Car;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CarMapper {
+public class CarDTOMapper {
 
     // Recibe objeto CarDTO y devuelve objeto Car
 
