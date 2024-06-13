@@ -1,12 +1,11 @@
-package com.dperez.CarRegistry.controller.dto;
+package com.dperez.CarRegistry.repository.entity;
 
 import lombok.Builder;
 import lombok.Data;
 
-
 @Data
 @Builder
-public class CarDTO {
+public class CarEntity {
 
     private Integer id;
     private String brand;
