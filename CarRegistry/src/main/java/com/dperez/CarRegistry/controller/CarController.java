@@ -76,37 +76,15 @@ public class CarController {
     @DeleteMapping("/delete-car/{id}")
     public ResponseEntity<?> deleteCar(@PathVariable Integer id){
 
-        try {
-           if(carService.deleteCar(id)) {
+           return carService.deleteCar(id) ? ResponseEntity.ok().build()
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Car not found");
+    }
 
-               return ResponseEntity.ok().build();
-           }
-           else {
-               return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Car not found");
-           }
-        }
-//        catch (NumberFormatException e){
-//            log.error("Error deleting car: {}.", id);
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NUMBER FORMAT");
-//        }
-//        catch (NullPointerException e){
-//            log.error("Error deleting car: {}.", id);
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("NULL POINTER");
-//        }
-        catch (Exception e) {
-            log.error("Error deleting dar: ", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("EXCEPTION.");
-        }
+
+    @PutMapping("/update-car/{id}")
+    public ResponseEntity<?> updateCar(@PathVariable Integer id, @RequestBody CarDTO carDTO){
+
 
     }
 
-//
-//    @PutMapping("/update-car/{id}")
-//    public ResponseEntity<?> updateCar(@PathVariable Integer id, @RequestBody CarDTO carDTO){
-//
-//        System.out.println("New car added successfully. Id: " + carDTO.getId());
-//
-//        return ResponseEntity.ok("The car with Id "+ id + " has been updated successfully." );
-//    }
-
-}//End Class
+}
