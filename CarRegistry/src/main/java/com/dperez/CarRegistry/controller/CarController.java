@@ -59,33 +59,47 @@ public class CarController {
             }
             catch (NullPointerException e){
                 log.error("Error getting car: {}.", id);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not found car.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found car.");
             }
             catch (InputMismatchException e){
                 log.error("Error getting car: {} . The Id must be a number", id );
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not found car. Id format error");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found car. Id format error");
             }
 
             catch (Exception e) {
                 log.error("Error getting dar: ", e);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not found car.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found car.");
             }
 
-
-
-
-//        System.out.println("New car added successfully. Id: " + carDTO.getId());
-//
-//        return ResponseEntity.ok("New car added successfully. Id: " + carDTO.getId());
     }
-//
-//    @DeleteMapping("/delete-car/{id}")
-//    public ResponseEntity<?> deleteCar(@PathVariable Integer id){
-//
-//        System.out.println("The car Id to delete is: " + id);
-//        return ResponseEntity.ok("The car with Id " + id + " has been removed.");
-//    }
-//
+
+    @DeleteMapping("/delete-car/{id}")
+    public ResponseEntity<?> deleteCar(@PathVariable Integer id){
+
+        try {
+           if(carService.deleteCar(id)) {
+
+               return ResponseEntity.ok().build();
+           }
+           else {
+               return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Car not found");
+           }
+        }
+//        catch (NumberFormatException e){
+//            log.error("Error deleting car: {}.", id);
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NUMBER FORMAT");
+//        }
+//        catch (NullPointerException e){
+//            log.error("Error deleting car: {}.", id);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("NULL POINTER");
+//        }
+        catch (Exception e) {
+            log.error("Error deleting dar: ", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("EXCEPTION.");
+        }
+
+    }
+
 //
 //    @PutMapping("/update-car/{id}")
 //    public ResponseEntity<?> updateCar(@PathVariable Integer id, @RequestBody CarDTO carDTO){
