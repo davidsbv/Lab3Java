@@ -58,7 +58,25 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public CarDTO updatedCar(Integer id, CarDTO carDTO) {
-        return null;
+
+        // Creamos un objeto Car a partir del objeto carDTO
+        Car car = carDTOMapper.toCar(carDTO);
+        car.setId(id);
+
+        // Creamos un objeto CarEntity a partir del objeto car
+        CarEntity carEntity = carEntityMapper.toCarEntity(car);
+
+        // Obtenemos el objeto CarEntity almacenado
+        CarEntity storedCarEntity = carRepository.updateById(carEntity);
+
+        // Si no se ha almacenado, devolverá null, sino devolverá un objeto CarDTO.
+        // CarEntity -> Car -> CarDTO
+        if(storedCarEntity != null){
+            return carDTOMapper.toCarDTO(carEntityMapper.toCar(storedCarEntity));
+        }
+        else {
+            return null;
+        }
     }
 
     @Override

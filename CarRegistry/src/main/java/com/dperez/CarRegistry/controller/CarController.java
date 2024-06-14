@@ -22,61 +22,31 @@ public class CarController {
     @PostMapping("/add-car")
     public ResponseEntity<?> addCar(@RequestBody CarDTO carDTO){
 
-        // Controlamos las excepciones y enviamos mensajes a log con el error
-        try{
 
+        // Si no hay Id en el objeto carDTO no permite iniciar el guardado de coche.
+        if (carDTO.getId() != null) {
             CarDTO carToSave = carService.addNewCar(carDTO);
-            return ResponseEntity.ok(carToSave);
-
+            return  carToSave != null ? ResponseEntity.ok(carToSave)
+                    : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving car.");
         }
-        catch (NumberFormatException e){
-            log.error("Error saving car: ", e);
-            return ResponseEntity.notFound().build();
-        }
-        catch (NullPointerException e){
-            log.error("Error saving car: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving car.");
-        }
-        catch (Exception e){
-            log.error("Error saving car: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving car.");
+        else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: there is no Id.");
         }
     }
 
-        @GetMapping("/get-car/{id}")
-        public ResponseEntity<?> getCar(@PathVariable Integer id){
+    @GetMapping("/get-car/{id}")
+    public ResponseEntity<?> getCar(@PathVariable Integer id){
 
-
-            try {
-
-                CarDTO carDTO = carService.getCarById(id);
-                return ResponseEntity.ok(carDTO);
-            }
-
-            catch (NumberFormatException e){
-                log.error("Error getting car: {}. Make sure you enter a number", id);
-                return ResponseEntity.notFound().build();
-            }
-            catch (NullPointerException e){
-                log.error("Error getting car: {}.", id);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found car.");
-            }
-            catch (InputMismatchException e){
-                log.error("Error getting car: {} . The Id must be a number", id );
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found car. Id format error");
-            }
-
-            catch (Exception e) {
-                log.error("Error getting dar: ", e);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found car.");
-            }
-
+        // Si recibe un objeto Null mostrará error 404, en caso contrario mostrará el objeto buscado.
+        CarDTO carDTO = carService.getCarById(id);
+        return carDTO != null ? ResponseEntity.ok(carDTO)
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found car.");
     }
 
     @DeleteMapping("/delete-car/{id}")
     public ResponseEntity<?> deleteCar(@PathVariable Integer id){
 
-           return carService.deleteCar(id) ? ResponseEntity.ok().build()
+           return carService.deleteCar(id) ? ResponseEntity.ok().body("Deleted car with id:")
                     : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Car not found");
     }
 
@@ -85,6 +55,13 @@ public class CarController {
     public ResponseEntity<?> updateCar(@PathVariable Integer id, @RequestBody CarDTO carDTO){
 
 
+        try {
+            CarDTO carToUpdate = carService.updatedCar(id, carDTO);
+            return  carToUpdate != null ? ResponseEntity.ok(carToUpdate)
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error updating car.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
 }

@@ -1,10 +1,6 @@
 package com.dperez.CarRegistry.repository;
 
-import com.dperez.CarRegistry.controller.dto.CarDTO;
 import com.dperez.CarRegistry.repository.entity.CarEntity;
-import com.dperez.CarRegistry.service.model.Car;
-
-import java.util.List;
 
 public interface CarRepository {
 
@@ -15,9 +11,11 @@ public interface CarRepository {
     // Si no se encuentra devuelve null.
     CarEntity findCarById(Integer id);
 
-    // Método para actualizar un coche, recibe la id del coche y un Objeto CarEntity. Devuelve un CarEntity actualizado.
+    // Método para actualizar un coche, un Objeto CarEntity. Devuelve un CarEntity actualizado.
+    // Para evitar que se pueda modificar la id a través del objeto que pasa en el RequesBody,
+    // se toma la id que pasa como variable en el Endpoint
     // Si no se encuentra el coche a actualizar devuelve null.
-    CarEntity updateById(Integer id, CarEntity carEntity);
+    CarEntity updateById(CarEntity carEntity);
 
     // Método para borrar un coche, recibe la id del coche como parámetro y devuelve true si existe y se ha borrado,
     // de lo contrario devoverá false.

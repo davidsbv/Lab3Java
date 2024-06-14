@@ -1,16 +1,13 @@
 package com.dperez.CarRegistry.repository.impl;
 
 import com.dperez.CarRegistry.repository.entity.CarEntity;
-import com.dperez.CarRegistry.service.model.Car;
 import com.dperez.CarRegistry.repository.CarRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Slf4j
 @Repository // Indica que es un componente de repositorio de Spring.
@@ -22,7 +19,7 @@ public class CarRepositoryImpl implements CarRepository {
     @Override
     public CarEntity save(CarEntity carEntity) {
 
-        // Devuelve null si y existe en carStock la id del CarEntity que recibe como parámetro.
+        // Devuelve null si ya existe en carStock la id del CarEntity que recibe como parámetro.
         // En caso contrario añade carEntity al carStock y lo devulve.
        if(carStock.isEmpty()){
            carStock.add(carEntity);
@@ -30,7 +27,7 @@ public class CarRepositoryImpl implements CarRepository {
        }
        else {
            if (existById(carEntity.getId())){
-
+               log.error("The car already exists");
                return null;
            }
            else{
@@ -49,34 +46,51 @@ public class CarRepositoryImpl implements CarRepository {
     }
 
     @Override
-    public CarEntity updateById(Integer id, CarEntity carEntity) {
-        return null;
+    public CarEntity updateById(CarEntity carEntity) {
+
+        if(carStock.isEmpty()){
+
+            log.error("There is no car in the database.");
+            return null;
+        }
+        else {
+            // Se busca el Objeto CarEntity a actualizar
+            Optional<CarEntity> carEntityOptional = carStock.stream()
+                    .filter(carFromStrock -> carFromStrock.getId().equals(carEntity.getId())).findFirst();
+
+            // Si está presente el objeto se toma el objeto de la lista en carEntityToUpdate y su índice en index.
+            // Se actualiza el objeto de la lista carStock con los nuevos datos de carEntity.
+            // Si no se encuentra el objeto en la lista, devuelve null.
+
+            if (carEntityOptional.isPresent()){
+                CarEntity carEntityToUpdate = carEntityOptional.get();
+                int index = carStock.indexOf(carEntityToUpdate);
+                try {
+                    carStock.set(index, carEntity);
+                    return carStock.get(index);
+                } catch (Exception e) {
+                    throw new RuntimeException("Error Updating Car.");
+                }
+            }
+            else{
+                log.error("Car not found.");
+                return null;
+            }
+        }
+
     }
 
     @Override
     public boolean deleteById(Integer id) {
 
-        try {
+       if(carStock.removeIf(carFromStock -> carFromStock.getId().equals(id))){
 
-           if(carStock.removeIf(carFromStock -> carFromStock.getId().equals(id))){
-
-               return true;
-           }
-           else {
-               log.info("No se ha encontrado el coche con id {}",id);
-               return false;
-           }
-
-        } catch (NullPointerException e) {
-            log.info("error borrando no encontrado");
+           return true;
+       }
+       else {
+           log.info("No se ha encontrado el coche con id {}",id);
            return false;
-
-        }
-        catch (UnsupportedOperationException e){
-            log.info("error borrando no encontrado");
-            return false;
-
-        }
+       }
 
     }
 
@@ -85,20 +99,5 @@ public class CarRepositoryImpl implements CarRepository {
 
         return carStock.stream().anyMatch(carFromStock -> carFromStock.getId().equals(id));
     }
-
-//    @PostConstruct
-//    public void initData(){
-//
-//        // Inicializa un listado de coches con instancias del objeto Car
-//        cars = Arrays.asList(
-//                Car.builder().brand("Nissan").model("GT-R").year(2020).build(),
-//                Car.builder().brand("Honda").model("Civic Type-R").year(2022).build(),
-//                Car.builder().brand("BMw").model("M3").year(2006).build()
-//        );
-//
-//        Se muestran los datos de las instancias en el log
-//       cars.forEach(car -> log.info(car.toString()));
-//    }
-
 
 }
