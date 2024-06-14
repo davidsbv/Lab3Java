@@ -11,10 +11,7 @@ import com.dperez.CarRegistry.service.CarService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j // Añade un logger (log)
 @Service // Indica que es un componente de servicio de Spring
@@ -66,6 +63,17 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public boolean deleteCar(Integer id) {
-        return false;
+
+        // Se comprueba si existe el coche con el id que pasa como parámetro. Si existe y se borra retorna true.
+
+        //return carRepository.existById(id) && carRepository.deleteById(id);
+        if (carRepository.existById(id)){
+            carRepository.deleteById(id);
+            return true;
+        }
+        else {
+            log.info("Car to delete not found.");
+            return false;
+        }
     }
 }

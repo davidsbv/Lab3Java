@@ -29,7 +29,7 @@ public class CarRepositoryImpl implements CarRepository {
            return  carEntity;
        }
        else {
-           if (carStock.stream().anyMatch(carFromStock -> carFromStock.getId().equals(carEntity.getId()))){
+           if (existById(carEntity.getId())){
 
                return null;
            }
@@ -55,7 +55,35 @@ public class CarRepositoryImpl implements CarRepository {
 
     @Override
     public boolean deleteById(Integer id) {
-        return false;
+
+        try {
+
+           if(carStock.removeIf(carFromStock -> carFromStock.getId().equals(id))){
+
+               return true;
+           }
+           else {
+               log.info("No se ha encontrado el coche con id {}",id);
+               return false;
+           }
+
+        } catch (NullPointerException e) {
+            log.info("error borrando no encontrado");
+           return false;
+
+        }
+        catch (UnsupportedOperationException e){
+            log.info("error borrando no encontrado");
+            return false;
+
+        }
+
+    }
+
+    @Override
+    public boolean existById(Integer id) {
+
+        return carStock.stream().anyMatch(carFromStock -> carFromStock.getId().equals(id));
     }
 
 //    @PostConstruct

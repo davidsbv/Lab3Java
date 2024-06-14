@@ -23,5 +23,7 @@ public interface CarRepository {
     // de lo contrario devoverá false.
     boolean deleteById(Integer id);
 
+    boolean existById(Integer id);
+
 
 }
