@@ -82,7 +82,7 @@ public class CarServiceImpl implements CarService {
     @Override
     public boolean deleteCar(Integer id) {
 
-        // Se comprueba si existe el coche con el id que pasa como parámetro. Si existe y se borra retorna true.
+        // Se comprueba si existe el coche con el id que pasa como parámetro. Si existe y es borrado retorna true.
 
         //return carRepository.existById(id) && carRepository.deleteById(id);
         if (carRepository.existById(id)){

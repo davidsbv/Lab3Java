@@ -48,6 +48,7 @@ public class CarRepositoryImpl implements CarRepository {
     @Override
     public CarEntity updateById(CarEntity carEntity) {
 
+        // Si la "base de datos" está vacía devuelve null y muestra mensaje en el log.
         if(carStock.isEmpty()){
 
             log.error("There is no car in the database.");
@@ -77,12 +78,12 @@ public class CarRepositoryImpl implements CarRepository {
                 return null;
             }
         }
-
     }
 
     @Override
     public boolean deleteById(Integer id) {
 
+        // Si se encuentra el id buscado, se borra el objeto CarEntity que pertenece
        if(carStock.removeIf(carFromStock -> carFromStock.getId().equals(id))){
 
            return true;
@@ -96,7 +97,7 @@ public class CarRepositoryImpl implements CarRepository {
 
     @Override
     public boolean existById(Integer id) {
-
+        // Busca un Objeto CarEntity por id y devuelve true or false si se encuentra.
         return carStock.stream().anyMatch(carFromStock -> carFromStock.getId().equals(id));
     }
 

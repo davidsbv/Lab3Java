@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.InputMismatchException;
 
 @Slf4j
-@RestController // Indica qeu es un controlador de Spring MVC
+@RestController
 public class CarController {
 
     @Autowired
@@ -26,6 +26,8 @@ public class CarController {
         // Si no hay Id en el objeto carDTO no permite iniciar el guardado de coche.
         if (carDTO.getId() != null) {
             CarDTO carToSave = carService.addNewCar(carDTO);
+
+            // Si el método addNewCar devuelve null mostrará mensaje de error, sino añadirá el coche
             return  carToSave != null ? ResponseEntity.ok(carToSave)
                     : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving car.");
         }
@@ -46,8 +48,9 @@ public class CarController {
     @DeleteMapping("/delete-car/{id}")
     public ResponseEntity<?> deleteCar(@PathVariable Integer id){
 
-           return carService.deleteCar(id) ? ResponseEntity.ok().body("Deleted car with id:")
-                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Car not found");
+        // Borrará el coche que buscado si se encuentra. Si no lo halla mostrará mensaje y error 404
+        return carService.deleteCar(id) ? ResponseEntity.ok().body("Deleted car with id:")
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Car not found");
     }
 
 
@@ -56,10 +59,13 @@ public class CarController {
 
 
         try {
+
+            // Si recibe un objeto Null mostrará error 404, en caso contrario mostrará el objeto actualizado.
             CarDTO carToUpdate = carService.updatedCar(id, carDTO);
             return  carToUpdate != null ? ResponseEntity.ok(carToUpdate)
-                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error updating car.");
-        } catch (RuntimeException e) {
+                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Car not found.");
+        }
+        catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
