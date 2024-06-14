@@ -1,5 +1,9 @@
 package com.dperez.CarRegistry.service.impl;
 
+import com.dperez.CarRegistry.controller.dto.CarDTO;
+import com.dperez.CarRegistry.controller.mapper.CarDTOMapper;
+import com.dperez.CarRegistry.repository.entity.CarEntity;
+import com.dperez.CarRegistry.repository.mapper.CarEntityMapper;
 import com.dperez.CarRegistry.service.model.Car;
 import com.dperez.CarRegistry.repository.CarRepository;
 import com.dperez.CarRegistry.service.CarService;
@@ -19,48 +23,49 @@ public class CarServiceImpl implements CarService {
     @Autowired
     private CarRepository carRepository;
 
-    // Inyecta el valor de la propiedad car.defaultBrand en defaultBrand
-    @Value("${car.defaultBrand}")
-    private String defaultBrand;
+    @Autowired
+    private CarEntityMapper carEntityMapper;
+
+    @Autowired
+    private CarDTOMapper carDTOMapper;
+
 
     @Override
-    public String getDefaultBrand() {
+    public CarDTO addNewCar(CarDTO carDTO) {
+        // Creamos un objeto Car a partir del objeto carDTO
+        Car car = carDTOMapper.toCar(carDTO);
 
-        // Se accede al valor de la propiedad defaultBrand y se devuelve
-        log.info("(FROM SERVICE)Valor de la propiedad defaultBrand: {}", defaultBrand);
+        // Creamos un objeto CarEntity a partir del objeto car
+        CarEntity carEntity = carEntityMapper.toCarEntity(car);
 
-        return defaultBrand;
+        // Obtenemos el objeto CarEntity almacenado
+        CarEntity storedCarEntity = carRepository.save(carEntity);
+
+        // Si no se ha almacenado, devolverá null, sino devolverá un objeto CarDTO.
+        // CarEntity -> Car -> CarDTO
+        if(storedCarEntity != null){
+            return carDTOMapper.toCarDTO(carEntityMapper.toCar(storedCarEntity));
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
-    public List<Car> getAllCars() {
+    public CarDTO getCarById(Integer id) {
 
-        List<Car> allCarsList = carRepository.findAll();
+        // Devolverá el objeto CarDTO con el id que se le pasa como parámetro
+        return carDTOMapper.toCarDTO(carEntityMapper.toCar(carRepository.findCarById(id)));
 
-        allCarsList.forEach(car -> System.out.println(car.toString()));
-
-        String message = allCarsList.isEmpty() ? String.format("No cars founded.") :
-                                                 String.format("Cars founded: %d", allCarsList.size());
-        log.info(message);
-
-        return allCarsList;
     }
 
-
-    // Método para buscar coche por marca, recibe la marca como parámetro y devuelve el rsultado como una lista.
-    // Informa en el log del resultado de la búsqueda.
     @Override
-    public List<Car> getCarsByBrand(String brand) {
-
-        List<Car> carsByBrand = carRepository.findByBrand(brand);
-
-        carsByBrand.forEach(car -> System.out.println(car.toString()));
-
-        String message = carsByBrand.isEmpty() ? String.format("No cars found for brand: %s", brand) :
-                                                 String.format("Found %d for brand: %s", carsByBrand.size(), brand);
-        log.info(message);
-        return carsByBrand;
+    public CarDTO updatedCar(Integer id, CarDTO carDTO) {
+        return null;
     }
 
-
+    @Override
+    public boolean deleteCar(Integer id) {
+        return false;
+    }
 }
